@@ -1,5 +1,7 @@
 const canvas = document.querySelector('canvas')
 const context = canvas.getContext('2d')
+const $sprite = document.querySelector('#sprite')
+const $bricks = document.querySelector('#bricks')
 
 canvas.width = 448
 canvas.height = 400
@@ -25,6 +27,39 @@ let paddleY = canvas.height - paddleHeight - 10
 let rightPressed = false
 let leftPressed = false
 
+/* BRICKS VARIABLES*/
+const brickRowCount = 6
+const brickColumnCount = 13
+const brickWidth = 30
+const brickHeight = 14
+const brickPadding = 2
+const brickOffsetTop = 80
+const brickOffsetLeft = 17
+const bricks = []
+
+const BRICK_STATUS = {
+  active: 1,
+  destroyed: 0
+}
+
+for (let col = 0; col < brickColumnCount; col++) {
+  bricks[col] = [] // initializes an empty array
+  for (let row = 0; row < brickRowCount; row++) {
+    // calculates brick position on the screen
+    const brickX = col * (brickWidth + brickPadding) + brickOffsetLeft
+    const brickY = row * (brickHeight + brickPadding) + brickOffsetTop
+    // sets a random color to each brick
+    const random = Math.floor(Math.random() * 8)
+    // saves each brick information
+    bricks[col][row] = {
+      x: brickX,
+      y: brickY,
+      status: BRICK_STATUS.active,
+      color: random
+    }
+  }
+}
+
 const PADDLE_SENSITIVITY = 8
 
 function drawBall() {
@@ -36,18 +71,69 @@ function drawBall() {
 }
 
 function drawPaddle() {
-  context.fillStyle = '#fff'
-  context.fillRect(
-    paddleX,
-    paddleY,
-    paddleWidth,
-    paddleHeight
+  context.drawImage(
+    $sprite, // image
+    29, // clipX: cutting coordinates 
+    174, // clipY: cutting coordinates 
+    paddleWidth, // cut size
+    paddleHeight, // cut size
+    paddleX, // position x of the draw
+    paddleY, // position y of the draw
+    paddleWidth, // witdh of the draw
+    paddleHeight // height of the draw
   )
 }
 
-function drawBricks() { }
+function drawBricks() {
+  for (let col = 0; col < brickColumnCount; col++) {
+    for (let row = 0; row < brickRowCount; row++) {
+      const currentBrick = bricks[col][row]
+      if (currentBrick.status === BRICK_STATUS.destroyed) continue
+
+      const clipX = currentBrick.color * 32
+
+      context.drawImage(
+        $bricks,
+        clipX,
+        0,
+        brickWidth,
+        brickHeight,
+        currentBrick.x,
+        currentBrick.y,
+        brickWidth,
+        brickHeight
+      )
+    }
+  }
+}
 
 function collisionDetection() {
+  for (let col = 0; col < brickColumnCount; col++) {
+    for (let row = 0; row < brickRowCount; row++) {
+      const currentBrick = bricks[col][row]
+      if (currentBrick.status === BRICK_STATUS.destroyed) continue
+
+      const isBallSameXAsBrick =
+        x > currentBrick.x &&
+        x < currentBrick.x + brickWidth
+
+      const isBallSameYAsBrick =
+        y > currentBrick.y &&
+        y < currentBrick.y + brickWidth
+
+
+      if (
+        isBallSameXAsBrick &&
+        isBallSameYAsBrick
+      ) {
+        dy = -dy
+        currentBrick.status = BRICK_STATUS.destroyed
+      }
+    }
+  }
+}
+
+function ballMovement() {
   // lateral rebound
   if (
     x + dx > canvas.width - ballRadius || // rigth wall
@@ -60,9 +146,7 @@ function collisionDetection() {
   if (y + dy < ballRadius) {
     dy = -dy
   }
-}
 
-function ballMovement() {
   // ball touches the paddle
   const isBallSameAsPaddle =
     x > paddleX &&
