@@ -158,7 +158,8 @@ function ballMovement() {
   if (isBallSameAsPaddle && isBallTouchingPaddle) {
     dy = -dy // changes the direction
   } else if ( // ball touches the floor
-    y + dy > canvas.height - ballRadius
+    y + dy > canvas.height - ballRadius ||
+    y + dy > paddleY + paddleHeight 
   ) {
     console.log('Game Over')
   }
