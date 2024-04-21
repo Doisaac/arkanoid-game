@@ -18,6 +18,7 @@ let dx = -3
 let dy = -3
 
 /* PADDLE VARIABLES */
+const PADDLE_SENSITIVITY = 8
 const paddleHeight = 10
 const paddleWidth = 50
 
@@ -60,7 +61,6 @@ for (let col = 0; col < brickColumnCount; col++) {
   }
 }
 
-const PADDLE_SENSITIVITY = 8
 
 function drawBall() {
   context.beginPath()
