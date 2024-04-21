@@ -159,8 +159,18 @@ function ballMovement() {
     dy = -dy // changes the direction
   } else if ( // ball touches the floor
     y + dy > canvas.height - ballRadius ||
-    y + dy > paddleY + paddleHeight 
+    y + dy > paddleY + paddleHeight
   ) {
+    /* restarts the bricks*/
+    bricks.forEach(row => {
+      row.forEach(brick => {
+        brick.status = BRICK_STATUS.active
+      });
+    })
+    /* places the ball and paddle at the starting point */
+    x = canvas.width / 2
+    y = canvas.height - 30
+    paddleX = (canvas.width - paddleWidth) / 2
     console.log('Game Over')
   }
 
