@@ -168,9 +168,7 @@ function ballMovement() {
       });
     })
     /* places the ball and paddle at the starting point */
-    x = canvas.width / 2
-    y = canvas.height - 30
-    paddleX = (canvas.width - paddleWidth) / 2
+    document.location.reload()
     console.log('Game Over')
   }
 
